@@ -1,0 +1,48 @@
+#!/bin/bash
+userfile=root/Quell/names.csv
+username=$(cat names.csv | tr "A-Z" "a-z")
+
+    if [ $(id -u) -eq 0 ]; then
+
+
+        for user in $username;
+        do
+            echo $user
+        if id "$user" &>/dev/null
+        then
+            echo "User Exist"
+        else
+
+        useradd -m -d /home/$user -s /bin/bash -g developers $user
+        echo "New User Created"
+        echo
+
+        su - -c "mkdir ~/.ssh" $user
+        echo ".ssh directory created for new user"
+        echo
+
+         su - -c "chmod 700 ~/.ssh" $user
+         echo "user permission for .ssh directory set"
+         echo
+
+
+        su - -c "touch ~/.ssh/authorized_keys" $user
+        echo "Authorized Key File Created"
+        echo
+
+
+        su - -c "chmod 600 ~/.ssh/authorized_keys" $user
+        echo "user permission for the Authorized Key File set"
+        echo
+
+
+        cp "/root/Shell/ssh-rsa.pub" "/home/$user/.ssh/authorized_keys"
+        echo "Copied the Public Key to New User Account on the server"
+        echo
+
+        echo "USER CREATED"
+            fi
+        done
+    else
+    echo "Only Sys Admin Can Onboard A User"
+    fi
